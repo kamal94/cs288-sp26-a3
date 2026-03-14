@@ -30,50 +30,23 @@ gcloud storage buckets add-iam-policy-binding gs://$BUCKET_NAME \
 DB credentials are passed as instance metadata and read by the startup script at boot.
 
 ```bash
-export REPO_URL="https://github.com/YOUR_ORG/cs288-sp26-a3.git"
-export DB_HOST="YOUR_DB_HOST"
+export REPO_URL="https://github.com/kamal94/cs288-sp26-a3.git"
+export DB_HOST="35.238.181.136"
 export DB_PORT="5432"
-export DB_NAME="YOUR_DB_NAME"
-export DB_USER="YOUR_DB_USER"
-export DB_PASSWORD="YOUR_DB_PASSWORD"
-export BUCKET_NAME="your-bucket-name"
+export DB_NAME="crawler"
+export DB_USER="postgres"
+export DB_PASSWORD="3mt-cR|~E]u_Gr61"
+export BUCKET_NAME="cs288-a3-crawled-html"
 
 gcloud compute instances create crawler-vm \
   --provisioning-model=SPOT \
   --instance-termination-action=STOP \
   --machine-type=e2-micro \
   --zone=us-central1-a \
+  --image=crawler-base-image \
   --scopes=cloud-platform \
-  --metadata=\
-db-host=$DB_HOST,\
-db-port=$DB_PORT,\
-db-name=$DB_NAME,\
-db-user=$DB_USER,\
-db-password=$DB_PASSWORD,\
-repo-url=$REPO_URL,\
-startup-script='#!/bin/bash
-set -e
-
-# Read DB credentials from instance metadata
-METADATA="http://metadata.google.internal/computeMetadata/v1/instance/attributes"
-H="Metadata-Flavor: Google"
-export DATABASE_HOST=$(curl -sf -H "$H" $METADATA/db-host)
-export DATABASE_PORT=$(curl -sf -H "$H" $METADATA/db-port)
-export DATABASE_NAME=$(curl -sf -H "$H" $METADATA/db-name)
-export DATABASE_USER=$(curl -sf -H "$H" $METADATA/db-user)
-export DATABASE_PASSWORD=$(curl -sf -H "$H" $METADATA/db-password)
-export REPO_URL=$(curl -sf -H "$H" $METADATA/repo-url)
-export BUCKET_NAME=$(curl -sf -H "$H" $METADATA/bucket-name)
-
-# Install dependencies
-apt-get update -q && apt-get install -y -q python3-pip git
-
-# Clone repo and install Python packages
-git clone "$REPO_URL" /app
-pip3 install -r /app/src/crawler/requirements.txt
-
-# Run crawler
-python3 /app/src/crawler/crawl.py'
+  --metadata=db-host=$DB_HOST,db-port=$DB_PORT,db-name=$DB_NAME,db-user=$DB_USER,db-password=$DB_PASSWORD,bucket-name=$BUCKET_NAME \
+  --metadata-from-file=startup-script=startup-script.sh
 ```
 
 > - `--scopes=cloud-platform` gives the VM access to GCS via its service account (no key file needed)
