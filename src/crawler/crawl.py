@@ -7,7 +7,7 @@ import warnings
 import warnings;from bs4.builder import XMLParsedAsHTMLWarning;
 warnings.filterwarnings('ignore', category=XMLParsedAsHTMLWarning)
 
-SITEMAP_URL = "https://eecs.berkeley.edu/sitemap_index.xml"
+SITEMAP_URL = "https://eecs.berkeley.edu/2022/12/berkeley-eecs-to-honor-joseph-gier-with-memorial-sculpture/"
 HTML_STORAGE_URL = os.path.join(os.path.dirname(__file__), "crawled_html")
 SLEEP_TIME = 10  # 10 seconds
 
@@ -56,9 +56,8 @@ def crawl():
     sites_to_visit.append(SITEMAP_URL)
 
     while len(sites_to_visit) > 0:
-        if len(sites_visited) % 10 == 0:
-            print(f"Visited {len(sites_visited)} sites. {len(sites_to_visit)} sites to visit. Ignored {len(ignored_links)} links.")
-            cache_sites_progress()
+        print(f"Visited {len(sites_visited)} sites. {len(sites_to_visit)} sites to visit. Ignored {len(ignored_links)} links.")
+        cache_sites_progress()
         sleep(SLEEP_TIME)
         site = sites_to_visit.pop()
         sites_visited.add(site)
