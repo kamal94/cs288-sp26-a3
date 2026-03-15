@@ -1,4 +1,5 @@
 .venv
 crawled_html
 crawled_html copy
+parsed_documents
 __pycache__
