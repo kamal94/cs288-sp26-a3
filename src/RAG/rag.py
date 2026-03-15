@@ -49,4 +49,4 @@ index.add(embed)
 index.nprobe = 10
 
 faiss.write_index(index, "eecs_ind.faiss")
-df.to_pickle("data_storage.pkl")
+df.to_json("data_storage.json", orient="records")

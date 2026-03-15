@@ -12,12 +12,12 @@ def load():
     script_dir = Path(__file__).parent
     
     index_path = script_dir / "eecs_ind.faiss"
-    pkl_path = script_dir / "data_storage.pkl"
+    json_path = script_dir / "data_storage.json"
+    df = pd.read_json(str(json_path), orient="records")
     
     model = SentenceTransformer('all-MiniLM-L6-v2')
     ind = faiss.read_index(str(index_path))
     ind.nprobe = 10
-    df = pd.read_pickle(pkl_path)
     
     return model, ind, df
 
