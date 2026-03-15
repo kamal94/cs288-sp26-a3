@@ -12,8 +12,8 @@ export DATABASE_PASSWORD=$(curl -sf -H "$H" $METADATA/db-password)
 export BUCKET_NAME=$(curl -sf -H "$H" $METADATA/bucket-name)
 
 # Pull latest code (repo and venv are pre-installed in the image)
-git config --system --add safe.directory /app
-git -C /app pull
+sudo git config --system --add safe.directory /app
+sudo git -C /app pull
 
 # Run crawler
 /app/venv/bin/python /app/src/crawler/crawl.py

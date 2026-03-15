@@ -8,8 +8,9 @@ import warnings
 from bs4.builder import XMLParsedAsHTMLWarning;
 warnings.filterwarnings('ignore', category=XMLParsedAsHTMLWarning)
 from google.cloud import storage
+from headers import get_random_headers
 
-SITEMAP_URL = "https://eecs.berkeley.edu/2022/12/berkeley-eecs-to-honor-joseph-gier-with-memorial-sculpture/"
+SITEMAP_URL = "https://eecs.berkeley.edu/robots.txt"
 HTML_STORAGE_URL = os.path.join(os.path.dirname(__file__), "crawled_html")
 SLEEP_TIME = 10  # 10 seconds
 EECS_URL_PATTERN = re.compile(r"https?:\/\/(?:www\d*\.)?eecs\.berkeley\.edu(?:\/[^\s]*)?")
@@ -21,7 +22,7 @@ def should_visit_link(url):
     )
 
 def get_html(url):
-    response = requests.get(url)
+    response = requests.get(url, headers=get_random_headers())
     return response.status_code, response.text
 
 def extract_links(html):
@@ -50,6 +51,7 @@ def connect_to_database():
     database_name = os.getenv("DATABASE_NAME")
     database_user = os.getenv("DATABASE_USER")
     database_password = os.getenv("DATABASE_PASSWORD")
+    print(f"Connecting to database: {database_host}:{database_port}/{database_name} using user {database_user}")
     conn = psycopg.connect(
         host=database_host,
         port=database_port,
@@ -57,29 +59,34 @@ def connect_to_database():
         user=database_user,
         password=database_password
     )
+    print("Connected to database")
     return conn
 
 def get_bucket_connection():
+    print("Getting bucket connection")
     bucket_name = os.getenv("BUCKET_NAME")
-    storage_client = storage.Client()
+    storage_client = storage.Client(project="crawler-490205")
     bucket = storage_client.bucket(bucket_name)
+    print("Got bucket connection")
     return bucket
 
 def get_some_sites_to_visit(db_connection) -> list[str]:
-    db_connection.cursor().execute("SELECT url FROM sites_to_visit LIMIT 10 where status = 'to_visit'")
-    return [row[0] for row in db_connection.cursor().fetchall()]
+    cur = db_connection.cursor()
+    cur.execute("SELECT url FROM urls WHERE status = 'to_visit' LIMIT 10")
+    return [row[0] for row in cur.fetchall()]
 
 def mark_link_as_failed(db_connection, url: str, status_code: int):
-    db_connection.cursor().execute("UPDATE sites_to_visit SET status = 'failed', error_code = %s WHERE url = %s", (status_code, url))
+    db_connection.cursor().execute("UPDATE urls SET status = 'failed', http_status_code = %s WHERE url = %s", (status_code, url))
     db_connection.commit()
 
 def mark_site_as_visited(db_connection, url: str):
-    db_connection.cursor().execute("UPDATE sites_to_visit SET status = 'visited' WHERE url = %s", (url,))
+    db_connection.cursor().execute("UPDATE urls SET status = 'visited' WHERE url = %s", (url,))
     db_connection.commit()
 
 def create_new_site_links(db_connection, links: list[str]):
+    cur = db_connection.cursor()
     for link in links:
-        db_connection.cursor().execute("INSERT INTO sites_to_visit (url, status) VALUES (%s, 'to_visit')", (link,))
+        cur.execute("INSERT INTO urls (url, status) VALUES (%s, 'to_visit')", (link,))
     db_connection.commit()
 
 def store_html(bucket, site_name, html):
@@ -89,6 +96,14 @@ def store_html(bucket, site_name, html):
     print(f"Uploaded to gs://{BUCKET_NAME}/{site_name}")
 
 
+def check_if_site_still_not_visited(db_connection, url: str):
+    cur = db_connection.cursor()
+    cur.execute("SELECT status FROM urls WHERE url = %s", (url,))
+    status = cur.fetchone()[0]
+    if status != 'to_visit':
+        return False
+    return True
+
 def crawl():
     conn = connect_to_database()
     bucket = get_bucket_connection()
@@ -96,6 +111,8 @@ def crawl():
     print("visiting sites:", '\n'.join(sites_to_visit))
     while len(sites_to_visit) > 0:
         site = sites_to_visit.pop()
+        if not check_if_site_still_not_visited(conn, site):
+            continue
         status_code, html = get_html(site)
         if status_code != 200:
             print(f"Failed to fetch {site}: {status_code}")
