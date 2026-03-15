@@ -1,0 +1,60 @@
+import pandas as pd
+import numpy as np
+import faiss
+from sentence_transformers import SentenceTransformer
+import llm
+import sys
+
+def load():
+    model = SentenceTransformer('all-MiniLM-L6-v2')
+    ind = faiss.read_index("eecs_ind.faiss")
+    ind.nprobe = 10
+    df = pd.read_pickle("data_storage.pkl")
+    return model, ind, df
+
+def get_context(q, model, index, df, k=10):
+    q_embed = model.encode([q]).astype('float32')
+    faiss.normalize_L2(q_embed)
+    _, ind = index.search(q_embed, k)
+
+    txts = []
+    for i in ind[0]:
+        if i != -1:
+            txts.append(df.iloc[i]['txt'])
+    
+    return " ".join(txts)
+
+
+def main():
+    q_path = sys.argv[1]
+    pred_path = sys.argv[2]
+    model, ind, df = load()
+
+    with open(q_path, 'r', encoding='utf-8') as f:
+        questions = [line.strip() for line in f if line.strip()]
+
+    ans = []
+    sys_prompt = f"""You will act as a strict QA bot answering questions 
+        about the University of California, Berkeley EECS department. Use only the context 
+        provided to answer the question. Your answer must be short (under 10 words). 
+        You must extract the answer directly from the text if this is possible. If the context 
+        provided does not contain the answer, reply with "Not available". Do not reply with full sentences."""
+    
+    for q in questions:
+        try:
+            context = get_context(q, model, ind, df)
+            query = f"Context:\n{context}\n\nQuestion: {q}\nAnswer:"
+            res = llm.call_llm(query, sys_prompt, "meta-llama/llama-3.1-8b-instruct", 10, 0.0, 15)
+            clean_res = res.replace("\n", " ").replace("\r", " ").strip()
+            ans.append(clean_res)
+        except Exception: # OpenRouter time-out check
+            print(f"error with question: '{q}'")
+            ans.append("not available")
+
+
+    with open(pred_path, 'w', encoding='utf-8') as f:
+        for a in ans:
+            f.write(f"{a}\n")
+
+if __name__ == "__main__":
+    main()
