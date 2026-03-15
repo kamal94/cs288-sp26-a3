@@ -4,12 +4,21 @@ import faiss
 from sentence_transformers import SentenceTransformer
 import llm
 import sys
+import json
+from pathlib import Path
+
 
 def load():
+    script_dir = Path(__file__).parent
+    
+    index_path = script_dir / "eecs_ind.faiss"
+    pkl_path = script_dir / "data_storage.pkl"
+    
     model = SentenceTransformer('all-MiniLM-L6-v2')
-    ind = faiss.read_index("eecs_ind.faiss")
+    ind = faiss.read_index(str(index_path))
     ind.nprobe = 10
-    df = pd.read_pickle("data_storage.pkl")
+    df = pd.read_pickle(pkl_path)
+    
     return model, ind, df
 
 def get_context(q, model, index, df, k=10):
