@@ -4,7 +4,6 @@ import os
 from bs4 import BeautifulSoup
 from time import sleep
 import warnings
-import warnings
 from bs4.builder import XMLParsedAsHTMLWarning
 
 warnings.filterwarnings("ignore", category=XMLParsedAsHTMLWarning)
