@@ -25,23 +25,38 @@ EECS_URL_PATTERN = re.compile(
 
 
 def should_visit_link(url):
-    return bool(EECS_URL_PATTERN.fullmatch(url) and url not in sites_visited)
+    return bool(
+        EECS_URL_PATTERN.fullmatch(url) 
+        and url not in sites_visited
+        and not url.lower().endswith(".pdf")
+        and not url.lower().endswith(".jpeg")
+        and not url.lower().endswith(".jpg")
+        and not url.lower().endswith(".png")
+        )
 
 
-def get_html(url):
-    response = requests.get(url, headers= get_random_headers())
-    return response.status_code, response.text
+def get_html(url) -> string:
+    try:
+        response = requests.get(url, headers= get_random_headers())
+        return response.status_code, response.text
+    except Exception as e:
+        print(e)
+        return None, None
 
 
 def extract_links(html):
-    soup = BeautifulSoup(html, "html.parser")
-    links = soup.find_all("a", href=True)
+    try:
+        soup = BeautifulSoup(html, "html.parser")
+        links = soup.find_all("a", href=True)
 
-    sitemap_links = soup.find_all("loc")
-    sitemap_urls = [link.text for link in sitemap_links]
-    # TODO: extract links from HTML
-    all_links = [link["href"] for link in links] + sitemap_urls
-    return [link for link in all_links if should_visit_link(link)]
+        sitemap_links = soup.find_all("loc")
+        sitemap_urls = [link.text for link in sitemap_links]
+        # TODO: extract links from HTML
+        all_links = [link["href"] for link in links] + sitemap_urls
+        return [link for link in all_links if should_visit_link(link)]
+    except Exception as e:
+        print(e)
+        return []
 
 
 def cache_sites_progress():
@@ -55,13 +70,36 @@ def cache_sites_progress():
         f.write("\n".join(sites_to_visit))
 
 
+def load_sites_progress():
+    """Load cached progress from previous run. Returns True if cache was loaded."""
+    global sites_to_visit, sites_visited, ignored_links, failed_links
+    visited_path = os.path.join(HTML_STORAGE_URL, "visited_sites.txt")
+    if not os.path.exists(visited_path):
+        return False
+
+    def _read_lines(filename):
+        path = os.path.join(HTML_STORAGE_URL, filename)
+        if os.path.exists(path):
+            with open(path, "r") as f:
+                return [line for line in f.read().splitlines() if line]
+        return []
+
+    sites_visited = set(_read_lines("visited_sites.txt"))
+    ignored_links = _read_lines("ignored_links.txt")
+    failed_links = _read_lines("failed_links.txt")
+    sites_to_visit = _read_lines("sites_to_visit.txt")
+    print(f"Resumed from cache: {len(sites_visited)} visited, {len(sites_to_visit)} queued, {len(failed_links)} failed.")
+    return True
+
+
 def setup_folders():
     if not os.path.exists(HTML_STORAGE_URL):
         os.makedirs(HTML_STORAGE_URL)
 
 
 def crawl():
-    sites_to_visit.append(SITEMAP_URL)
+    if not load_sites_progress():
+        sites_to_visit.append(SITEMAP_URL)
 
     while len(sites_to_visit) > 0:
         print(
