@@ -1,6 +1,7 @@
 import pandas as pd
 import numpy as np
 import faiss
+from rank_bm25 import BM25Okapi
 from sentence_transformers import SentenceTransformer
 import llm
 import sys
@@ -17,27 +18,24 @@ def load():
     
     model = SentenceTransformer('all-MiniLM-L6-v2')
     ind = faiss.read_index(str(index_path))
-    ind.nprobe = 10
+    bm25 = BM25Okapi([doc.split(" ") for doc in df['txt'].tolist()])
     
-    return model, ind, df
+    return model, ind, df, bm25
 
-def get_context(q, model, index, df, k=10):
+def get_context(q, model, index, df, k=8):
     q_embed = model.encode([q]).astype('float32')
     faiss.normalize_L2(q_embed)
-    _, ind = index.search(q_embed, k)
+    _, f_ind = index.search(q_embed, k)
 
-    txts = []
-    for i in ind[0]:
-        if i != -1:
-            txts.append(df.iloc[i]['txt'])
-    
-    return " ".join(txts)
+    txts = [df.iloc[i]['txt'] for i in f_ind[0] if i != -1]
+
+    return "\n\n".join(txts)
 
 
 def main():
     q_path = sys.argv[1]
     pred_path = sys.argv[2]
-    model, ind, df = load()
+    model, ind, df, bm25 = load()
 
     with open(q_path, 'r', encoding='utf-8') as f:
         questions = [line.strip() for line in f if line.strip()]
@@ -46,12 +44,13 @@ def main():
     sys_prompt = f"""You will act as a strict QA bot answering questions 
         about the University of California, Berkeley EECS department. Use only the context 
         provided to answer the question. Your answer must be short (under 10 words). 
+        Answers are usually names, numbers, dates, or short entities. 
         You must extract the answer directly from the text if this is possible. If the context 
         provided does not contain the answer, reply with "Not available". Do not reply with full sentences."""
     
     for q in questions:
         try:
-            context = get_context(q, model, ind, df)
+            context = get_context(q, model, ind, df, bm25)
             query = f"Context:\n{context}\n\nQuestion: {q}\nAnswer:"
             res = llm.call_llm(query, sys_prompt, "meta-llama/llama-3.1-8b-instruct", 10, 0.0, 15)
             clean_res = res.replace("\n", " ").replace("\r", " ").strip()

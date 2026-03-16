@@ -8,8 +8,8 @@ import pickle
 parsed_dir = Path("../crawler/parsed_documents")
 
 # need grid search
-chunk_size = 200
-overlap = 40
+chunk_size = 150
+overlap = 30
 step = chunk_size - overlap
 data = []
 for file in parsed_dir.iterdir():
@@ -38,15 +38,9 @@ embed = embed_model.encode(df['txt'].tolist(), show_progress_bar = True)
 embed = np.array(embed).astype('float32')
 
 dim = embed.shape[1]
-nlist = 100
-quantizer = faiss.IndexFlatIP(dim)
-index = faiss.IndexIVFFlat(quantizer, dim, nlist, faiss.METRIC_INNER_PRODUCT)
-
+index = faiss.IndexFlatIP(dim) 
 faiss.normalize_L2(embed)
-
-index.train(embed)
 index.add(embed)
-index.nprobe = 10
 
 faiss.write_index(index, "eecs_ind.faiss")
 df.to_json("data_storage.json", orient="records")
