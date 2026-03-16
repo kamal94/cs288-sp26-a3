@@ -9,9 +9,10 @@ from bs4.builder import XMLParsedAsHTMLWarning
 warnings.filterwarnings("ignore", category=XMLParsedAsHTMLWarning)
 from headers import get_random_headers
 
+RETRY_FAILED_SITES = True
 SITEMAP_URL = "https://eecs.berkeley.edu/sitemap_index.xml"
 HTML_STORAGE_URL = os.path.join(os.path.dirname(__file__), "crawled_html")
-SLEEP_TIME = 1/30  # 10 seconds
+SLEEP_TIME = 1  # 10 seconds
 
 sites_to_visit = []
 sites_visited = set()
@@ -97,27 +98,38 @@ def setup_folders():
 
 
 def crawl():
-    if not load_sites_progress():
+    load_sites_progress()
+    if RETRY_FAILED_SITES:
+        print("failed_links:", failed_links)
+        sites_to_visit.extend(failed_links)
+        os.remove(os.path.join(HTML_STORAGE_URL, "failed_links.txt"))
+    else:
         sites_to_visit.append(SITEMAP_URL)
 
     while len(sites_to_visit) > 0:
+        sleep(SLEEP_TIME)
         print(
             f"Visited {len(sites_visited)} sites. {len(sites_to_visit)} sites to visit. Ignored {len(ignored_links)} links."
         )
         cache_sites_progress()
         site = sites_to_visit.pop()
+        if os.path.exists(get_file_path_from_site(site)):
+            print(f"Skipping {site} as it has already been visited.")
+            print(f"File path: {get_file_path_from_site(site)}")
+            continue
         sites_visited.add(site)
         status_code, html = get_html(site)
         if status_code != 200:
             print(f"Failed to fetch {site}: {status_code}")
             failed_links.append(site)
             continue
-        with open(os.path.join(HTML_STORAGE_URL, site.replace("/", "_")), "w") as f:
+        with open(get_file_path_from_site(site), "w") as f:
             f.write(html)
         links = extract_links(html)
         sites_to_visit.extend(links)
-        sleep(SLEEP_TIME)
 
+def get_file_path_from_site(site_url):
+    return os.path.join(HTML_STORAGE_URL, site_url.replace("/", "_"))
 
 if __name__ == "__main__":
     setup_folders()

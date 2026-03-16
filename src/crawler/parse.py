@@ -101,8 +101,6 @@ def parse():
         text = remove_extra_newlines(text)
         with open(os.path.join(PARSED_DOCUMENTS_PATH, file), "w") as f:
             f.write(text)
-        # with open(os.path.join(PARSED_DOCUMENTS_PATH, file + ".html"), "w") as f:
-        #     f.write(str(filtered_html))
 
 def setup_folders():
     if not os.path.exists(PARSED_DOCUMENTS_PATH):
