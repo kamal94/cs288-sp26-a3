@@ -74,7 +74,7 @@ download() {
     echo "Unzipping ${dir}.zip ..."
     unzip -o -q "$zip_file" -d "$SCRIPT_DIR"
 
-    rm -f "$zip_file"
+    # rm -f "$zip_file"
     echo "Done: $dir"
   done
 }
