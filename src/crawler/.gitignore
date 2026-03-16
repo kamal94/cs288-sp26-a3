@@ -6,4 +6,6 @@ parsed_documents
 parsed_documents.zip
 crawled_html.zip
 
+failed_links.txt
+
 __pycache__
