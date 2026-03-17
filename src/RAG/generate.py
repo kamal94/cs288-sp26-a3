@@ -15,7 +15,7 @@ def load():
     json_path = script_dir / "data_storage.json"
     df = pd.read_json(str(json_path), orient="records")
     
-    model = SentenceTransformer('all-MiniLM-L6-v2')
+    model = SentenceTransformer('thenlper/gte-large', device='mps')
     ind = faiss.read_index(str(index_path))
     ind.nprobe = 10
     
@@ -44,11 +44,12 @@ def main():
 
     ans = []
     sys_prompt = f"""You will act as a strict QA bot answering questions 
-        about the University of California, Berkeley EECS department. Use only the context 
-        provided to answer the question. Your answer must be short (under 10 words). 
-        You must extract the answer directly from the text if this is possible. If the context 
-        provided does not contain the answer, reply with "Not available". Do not reply with full sentences."""
-    
+        about the University of California, Berkeley EECS department. Your answer should be as concise as possible; MUST BE UNDER 10 WORDS.
+        You must extract the answer directly from the text if possible. If the context 
+        provided does not contain the answer, reply with an educated guess (using both
+        the information given to you and your existing knowledge base). Do not reply full sentence structure,
+        i.e., do not include punctuation. If there are multiple correct answers, reply with ONLY ONE."""
+
     for q in questions:
         try:
             context = get_context(q, model, ind, df)
@@ -58,7 +59,7 @@ def main():
             ans.append(clean_res)
         except Exception: # OpenRouter time-out check
             print(f"error with question: '{q}'")
-            ans.append("not available")
+            ans.append("Timeout error.")
 
 
     with open(pred_path, 'w', encoding='utf-8') as f:
