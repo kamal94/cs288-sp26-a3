@@ -15,7 +15,7 @@ def load():
     json_path = script_dir / "data_storage.json"
     df = pd.read_json(str(json_path), orient="records")
     
-    model = SentenceTransformer('all-MiniLM-L6-v2')
+    model = SentenceTransformer('BAAI/bge-small-en-v1.5')
     ind = faiss.read_index(str(index_path))
     ind.nprobe = 10
     
@@ -43,17 +43,20 @@ def main():
         questions = [line.strip() for line in f if line.strip()]
 
     ans = []
-    sys_prompt = f"""You will act as a strict QA bot answering questions 
-        about the University of California, Berkeley EECS department. Use only the context 
-        provided to answer the question. Your answer must be short (under 10 words). 
-        You must extract the answer directly from the text if this is possible. If the context 
-        provided does not contain the answer, reply with "Not available". Do not reply with full sentences."""
+    sys_prompt = """You are a highly precise QA bot for the UC Berkeley EECS department. 
+    Base your answer STRICTLY on the provided context. Follow these rules exactly:
+    1. Extract the exact short answer directly from the text (must be under 10 words).
+    2. Do NOT write full sentences or conversational filler. Output ONLY the core entity, name, date, or number.
+    3. If there are multiple valid answers in the context, provide ONLY ONE of them.
+    4. If the question is a Yes/No question, output exactly "Yes" or "No".
+    5. If the question requires counting or arithmetic, output ONLY the final calculated number.
+    6. If the exact answer is absolutely not in the context, output "Not available"."""
     
     for q in questions:
         try:
             context = get_context(q, model, ind, df)
             query = f"Context:\n{context}\n\nQuestion: {q}\nAnswer:"
-            res = llm.call_llm(query, sys_prompt, "meta-llama/llama-3.1-8b-instruct", 10, 0.0, 15)
+            res = llm.call_llm(query, sys_prompt, "meta-llama/llama-3.1-8b-instruct", 20, 0.0, 15)
             clean_res = res.replace("\n", " ").replace("\r", " ").strip()
             ans.append(clean_res)
         except Exception: # OpenRouter time-out check
