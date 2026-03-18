@@ -4,6 +4,7 @@ import faiss
 from sentence_transformers import SentenceTransformer
 from pathlib import Path
 import pickle
+import torch
 
 parsed_dir = Path("../crawler/parsed_documents")
 
@@ -32,9 +33,11 @@ df = pd.DataFrame(data, columns=['txt'])
 # cleaned and chunked data goes in to the dataframe
 # df = pd.DataFrame(data)
 
-embed_model = SentenceTransformer('BAAI/bge-small-en-v1.5')
+device = "mps" if torch.backends.mps.is_available() else "cpu"
 
-embed = embed_model.encode(df['txt'].tolist(), show_progress_bar = True)
+embed_model = SentenceTransformer('BAAI/bge-base-en-v1.5', device=device)
+
+embed = embed_model.encode(df['txt'].tolist(), show_progress_bar=True, batch_size=16)
 embed = np.array(embed).astype('float32')
 
 dim = embed.shape[1]
