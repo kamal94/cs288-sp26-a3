@@ -1,9 +1,0 @@
-.venv
-
-crawled_html
-crawled_html copy
-parsed_documents
-parsed_documents.zip
-crawled_html.zip
-
-__pycache__
