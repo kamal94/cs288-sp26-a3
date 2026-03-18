@@ -17,11 +17,10 @@ def load():
     
     model = SentenceTransformer('BAAI/bge-small-en-v1.5')
     ind = faiss.read_index(str(index_path))
-    ind.nprobe = 10
     
     return model, ind, df
 
-def get_context(q, model, index, df, k=10):
+def get_context(q, model, index, df, k=20):
     q_embed = model.encode([q]).astype('float32')
     faiss.normalize_L2(q_embed)
     _, ind = index.search(q_embed, k)
