@@ -1,6 +1,7 @@
 import pandas as pd
 import numpy as np
 import faiss
+from rank_bm25 import BM25Okapi
 from sentence_transformers import SentenceTransformer
 import llm
 import sys
@@ -18,28 +19,32 @@ def load():
     model = SentenceTransformer('BAAI/bge-base-en-v1.5')
     ind = faiss.read_index(str(index_path))
     
-    return model, ind, df
+    tokenized_corpus = [[word.lower() for word in doc.split() if len(word) > 2] for doc in df['txt'].tolist()]
+    bm25 = BM25Okapi(tokenized_corpus)
+    
+    return model, ind, df, bm25
 
-def get_context(q, model, index, df, k=8):
+def get_context(q, model, index, df, bm25, k_dense=8, k_sparse=4):
     q_embed = model.encode([q]).astype('float32')
     faiss.normalize_L2(q_embed)
-    _, ind = index.search(q_embed, k)
+    _, f_ind = index.search(q_embed, k_dense)
+    first = [i for i in f_ind[0] if i != -1]
 
-    txts = []
-    for i in ind[0]:
-        if i != -1:
-            txts.append(df.iloc[i]['txt'])
-    
-    return " ".join(txts)
+    t_query = [word.lower() for word in q.split() if len(word) > 2]
+    if not t_query:
+        t_query = q.lower().split() 
+        
+    second = np.argsort(bm25.get_scores(t_query))[::-1][:k_sparse].tolist()
+    return "\n\n".join([df.iloc[i]['txt'] for i in list(set(first + second))])
 
 
 def main():
     q_path = sys.argv[1]
     pred_path = sys.argv[2]
-    model, ind, df = load()
+    model, ind, df, bm25 = load()
 
     with open(q_path, 'r', encoding='utf-8') as f:
-        questions = [line.strip() for line in f if line.strip()]
+        questions = [line.strip().strip('"\'') for line in f if line.strip()]
 
     ans = []
     sys_prompt = """You are a highly precise QA bot for the UC Berkeley EECS department. 
@@ -53,7 +58,7 @@ def main():
     
     for q in questions:
         try:
-            context = get_context(q, model, ind, df)
+            context = get_context(q, model, ind, df, bm25)
             query = f"Context:\n{context}\n\nQuestion: {q}\nAnswer:"
             res = llm.call_llm(query, sys_prompt, "meta-llama/llama-3.1-8b-instruct", 20, 0.0, 25)
             clean_res = res.replace("\n", " ").replace("\r", " ").strip()
