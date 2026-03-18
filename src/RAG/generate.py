@@ -20,7 +20,7 @@ def load():
     
     return model, ind, df
 
-def get_context(q, model, index, df, k=15):
+def get_context(q, model, index, df, k=20):
     q_embed = model.encode([q]).astype('float32')
     faiss.normalize_L2(q_embed)
     _, ind = index.search(q_embed, k)
