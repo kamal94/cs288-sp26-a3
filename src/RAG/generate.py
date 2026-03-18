@@ -20,7 +20,7 @@ def load():
     
     return model, ind, df
 
-def get_context(q, model, index, df, k=20):
+def get_context(q, model, index, df, k=15):
     q_embed = model.encode([q]).astype('float32')
     faiss.normalize_L2(q_embed)
     _, ind = index.search(q_embed, k)
@@ -55,7 +55,7 @@ def main():
         try:
             context = get_context(q, model, ind, df)
             query = f"Context:\n{context}\n\nQuestion: {q}\nAnswer:"
-            res = llm.call_llm(query, sys_prompt, "meta-llama/llama-3.1-8b-instruct", 20, 0.0, 15)
+            res = llm.call_llm(query, sys_prompt, "meta-llama/llama-3.1-8b-instruct", 20, 0.0, 25)
             clean_res = res.replace("\n", " ").replace("\r", " ").strip()
             ans.append(clean_res)
         except Exception: # OpenRouter time-out check
