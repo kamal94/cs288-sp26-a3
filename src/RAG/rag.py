@@ -32,21 +32,15 @@ df = pd.DataFrame(data, columns=['txt'])
 # cleaned and chunked data goes in to the dataframe
 # df = pd.DataFrame(data)
 
-embed_model = SentenceTransformer('all-MiniLM-L6-v2')
+embed_model = SentenceTransformer('BAAI/bge-small-en-v1.5')
 
 embed = embed_model.encode(df['txt'].tolist(), show_progress_bar = True)
 embed = np.array(embed).astype('float32')
 
 dim = embed.shape[1]
-nlist = 100
-quantizer = faiss.IndexFlatIP(dim)
-index = faiss.IndexIVFFlat(quantizer, dim, nlist, faiss.METRIC_INNER_PRODUCT)
-
+index = faiss.IndexFlatIP(dim) 
 faiss.normalize_L2(embed)
-
-index.train(embed)
 index.add(embed)
-index.nprobe = 10
 
 faiss.write_index(index, "eecs_ind.faiss")
 df.to_json("data_storage.json", orient="records")
