@@ -18,19 +18,17 @@ def load():
     
     model = SentenceTransformer('BAAI/bge-small-en-v1.5')
     ind = faiss.read_index(str(index_path))
-    
-    tokenized_corpus = [[word.lower() for word in doc.split() if len(word) > 2] for doc in df['txt'].tolist()]
-    bm25 = BM25Okapi(tokenized_corpus)
+    bm25 = BM25Okapi([[word.lower() for word in doc.split() if len(word) > 2] for doc in df['txt'].tolist()])
     
     return model, ind, df, bm25
 
 def get_context(q, model, index, df, bm25, k_dense=8, k_sparse=4):
     q_embed = model.encode([q]).astype('float32')
     faiss.normalize_L2(q_embed)
-    _, f_ind = index.search(q_embed, k_dense)
-    first = [i for i in f_ind[0] if i != -1]
+    _, fi = index.search(q_embed, k_dense)
+    first = [i for i in fi[0] if i != -1]
 
-    t_query = [word.lower() for word in q.split() if len(word) > 2]
+    t_query = [w.lower() for w in q.split() if len(w) > 2]
     if not t_query:
         t_query = q.lower().split() 
         
