@@ -35,7 +35,7 @@ df = pd.DataFrame(data, columns=['txt'])
 
 device = "mps" if torch.backends.mps.is_available() else "cpu"
 
-embed_model = SentenceTransformer('BAAI/bge-base-en-v1.5', device=device)
+embed_model = SentenceTransformer('BAAI/bge-small-en-v1.5', device=device)
 
 embed = embed_model.encode(df['txt'].tolist(), show_progress_bar=True, batch_size=16)
 embed = np.array(embed).astype('float32')

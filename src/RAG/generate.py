@@ -16,7 +16,7 @@ def load():
     json_path = script_dir / "data_storage.json"
     df = pd.read_json(str(json_path), orient="records")
     
-    model = SentenceTransformer('BAAI/bge-base-en-v1.5')
+    model = SentenceTransformer('BAAI/bge-small-en-v1.5')
     ind = faiss.read_index(str(index_path))
     
     tokenized_corpus = [[word.lower() for word in doc.split() if len(word) > 2] for doc in df['txt'].tolist()]
