@@ -1,0 +1,114 @@
+what years was Prof. Darrell on the faculty of the MIT EECS department?
+where did Randy H. Katz receive his B.A?
+How many years did Borivoje Nikolic spend working at Texas Instruments Storage Products Group in San Jose?
+Who did UC Berkeley celebrate in the anniversary of 150 Years of Women at Berkeley (150W) in 2020?
+Who is the EECS Chair at Berkeley?
+Who was elected to the American Academy of Arts and Sciences on April 18, 2018?
+What percentage can the code required for computer simulations be reduced by using Simit?
+In which year was the Fall 2021 EECS Department Colloquium cancelled?
+When did Allen J. Lichtenberg pass away?
+Who has been appointed the next director of the Mathematics and Computer Science division at Argonne National Lab?
+Who authored the paper "Oracle-Guided Component-Based Program Synthesis"?
+What year was Stephen Tu awarded the Google Fellowship?
+What is the publication date of the document?
+How many upper division units do students need to complete for the CS major?
+What is the title of the document?
+Who won the 2020 IEEE Marie Sklodowska-Curie Award?
+How much does each Kamigami kit cost?
+What is the publication title?
+What percentage of intra-application vulnerabilities were fixed by the proposed modifications?
+Who won the BSA Excellence in Management Awards?
+When was Stuart Russell named an Honorary Fellow of Wadham College?
+When was the 2014 Rising Stars in EECS workshop held at UC Berkeley?
+Who is a 2025/2026 Apple NSI Fellowship and Scholarship Recipient for a 5th-Year M.S. program?
+When are the regular business hours for rooms in Cory/Soda Halls?
+Who won the NVIDIA Graduate Fellowship?
+Who was named 2019 Marconi Society Paul Baran Young Scholar?
+When did Sara Sheehan complete her Ph.D. Dissertations?
+When was the technical report UCB/EECS-2011-110 published?
+Was the Fall 2021 EECS Colloquium canceled?
+How many times has student enrollment in CS C8 tripled since 2016?
+When did Alexei Efros, Ren Ng, and Kameshwar Poolla win EECS outstanding teaching awards?
+How thick is a strand of human hair in nanometers?
+When did Trevor Darrell receive the ICML Test-of-Time Award?
+When was the EECS Department Colloquium Series held in the Spring?
+How long does it take to train a model in the new machine-learning training system?
+What is the year of the CDSS CS Commencement ceremony?
+What is the phone number for the Cory Hall building manager?
+Who won the 2017 Bloomberg 50 award?
+Who is interviewed in the Robohub podcast about DART?
+How much money did CS majors from UC Berkeley win in scholarships and prizes for winning the 2018 Fiesta Bowl Overwatch Collegiate National Championship?
+Where will Jitendra Malik be based at Facebook?
+When was the article "Buffer Management for Colored Packets with Deadlines" published?
+Who is the NSI Faculty Lead?
+Who was elected to the American Academy of Arts and Sciences on April 12, 2017?
+What award did Chenming Hu win in 2020?
+Who received the 2026 James C. McGroddy Prize for New Materials?
+How many UC Berkeley EECS faculty were named 2026 Sloan Fellows?
+Who won the 2019 ACM/IEEE Supercomputing Conference Test of Time Award?
+Who won the 2017 ACM Paris Kanellakis Theory and Practice Award?
+When did Harry Huskey die?
+Who found a security loophole in WhatsApp?
+In which month did the team demonstrate the first implantable dust-sized wireless sensor?
+How many researchers has the Simons Institute hosted?
+How long is the grace period for EECS staff between their last day and when their EECS account closes?
+Who won the ACM Eugene L. Lawler Award?
+What year did Tianshi Wang write his Ph.D. dissertation?
+What year was the Fall 2021 EECS Colloquium cancelled due to the COVID-19 pandemic?
+How many alumnus were honored as Siebel Scholars in 2020?
+When was Ana Arias elevated to IEEE Fellow?
+When did Xiaoye Sherry Li's term as Vice President-At-Large of SIAM begin?
+What date did Stuart Russell start leading the new Kavli Center for Ethics, Science, and the Public?
+When did Tobias Boelter find a vulnerability in WhatsApp?
+Who won the 2020 Technical Achievement Awards from the Academy of Motion Picture Arts and Sciences?
+How many faculty members have been elected to the National Academy of Engineering from the EECS department at UC Berkeley?
+When did Wes Holliday give his talk?
+In what year did William M. Kahan retire from the University?
+How much funding did SiFive receive in series C funding?
+In what year was Vikram Iyer named a Marconi Society Young Scholar?
+When did Umesh Vazirani win the SIGecom Test-Of-Time Award?
+What is the Technical Report number?
+Where did Alex Dimakis receive his Phd?
+Who are the authors of the document?
+When was the 2018 Student Awards Ceremony held?
+Who were the EECS professors that won the IFAC Fellow Awards in September 2016?
+How much research grant money did Narges Nourozi receive?
+Who received the EECS Outstanding TA Award in 2019-2020?
+What year did Amar S. Chaudhary complete his Ph.D. dissertation?
+When are diplomas sent to Fall graduates?
+What year was the document published?
+Who is no longer active in the department?
+When did Fei Fei Li give her talk "From Seeing to Doing: Ascending the Ladder of Visual Intelligence"?
+How many units is the CS W186 course at UC Berkeley?
+How many units is the course EECS 149?
+Who won the 2020 EECS Teaching Awards?
+Who won the 2025 IEEE James H. Mulligan, Jr. Education Medal?
+When was Shankar Sastry awarded the Berkeley Citation?
+When was the technical report published?
+What is the Technical Report Number?
+What is the Technical Report Number?
+When is Bill Dally giving his talk on "Trends in Deep Learning Hardware"?
+Who received the 2012 ACM Distinguished Educator award?
+When is the talk "Reading Alan Turing" scheduled to take place?
+When did Jitendra Malik join Facebook?
+Who won the IEEE Founders Medal?
+Whose video lessons keep students engaged?
+When did Michael I. Jordan receive his PhD?
+When was the document published?
+What year did Sewon Min receive her Ph.D. in Computer Science & Engineering?
+Who won the 2019 IEEE EDS Early Career Award?
+In what year did Jan Rabaey win the 2017 SRC Aristotle Award?
+Who contributed $1 million to establish the endowment for the Zhang Family Endowed Professor at UC Berkeley?
+Who was Berkeley EECS Prof. Joseph Gier?
+Who won the 2021-22 Google-CMD-IT LEAP Fellowship Award?
+What conference will they present their research at?
+What is the Technical Report Number?
+When was Warren Hoburg selected by NASA for the 2017 Astronaut Candidate Class?
+Who won the 2017 Robert Bosch Micro and Nano Electro Mechanical Systems Award?
+What is EECS celebrating this year?
+Who won the SIGecom Test-Of-Time Award in 2024?
+Who has been named director of the UNT PACCAR Technology Institute?
+What package provides an interface between Common LISP and INGRES using SQL?
+Which university developed the cache controller for the SPUR multiprocessor system?
+When did Michael Lustig receive his BSc in Electrical Engineering?
+How many individuals are on the "7 over 70" list?
